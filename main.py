@@ -27,7 +27,7 @@ def handle_text(message):
     user_markup.row('/start','/stop')
 # /remove
     user_markup.row(const.command_buy)
-    user_markup.row('/reviews','/rules','/help')
+    user_markup.row(const.command_review, const.command_rules, const.command_help)
     bot.send_message(message.chat.id, "Выбирай купить и покупай ...", reply_markup=user_markup)
 
 # stop
@@ -46,9 +46,11 @@ def handle_text(message):
 def handle_text(message):
     answer = "hey, read help another!"
     global i
-    if message.text == "rules":
-        bot.send_message(message.chat.id,"Выбираем, оплачиваем, получаем ...")
+    if message.text == const.command_rules.decode('utf-8'):
+        bot.send_message(message.chat.id, "Выбираем, оплачиваем, получаем ...")
 #       log(message, answer)
+    elif message.text == const.command_review.decode('utf-8'):
+        bot.send_message(message.chat.id, "Все елочки лучшего качества ...")
     elif message.text == const.command_buy.decode('utf-8'):
         bot.send_message(message.chat.id,"заказ {0} подготовлен".format(str(i)))
         bot.send_message(message.chat.id, "[Checkout]({0})".format(const.logo), parse_mode="Markdown")
