@@ -12,18 +12,18 @@ bot = telebot.TeleBot(id.token)
 # order counter
 i = 1
 
+
 # bot info
 print ("Bot profile is: {0}".format(bot.get_me()))
 
 # eventlog
-def log(message, answer):
+def log(question, answer):
     from datetime import datetime
     print ("\n---{0}---".format(datetime.now()))
-    print(type(message.text))
-    print("Message from {0} {1} (id = {2})\nText: {3}".format(message.from_user.first_name,
-                                                                message.from_user.last_name,
-                                                                str(message.from_user.id),
-                                                                message.text))
+    print("Message from {0} {1} (id = {2})\nText: {3}".format(question.from_user.first_name,
+                                                                question.from_user.last_name,
+                                                                str(question.from_user.id),
+                                                                question.text))
     print("Answer: {0}".format(answer))
 
 # bot commands
@@ -59,20 +59,16 @@ def handle_text(message):
     step = 0
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, "Выбираем, оплачиваем, получаем ...")
-        answer = "правила просты ..."
-#        log(message, answer)
+#        log(message, u"правила просты ...")
     elif message.text == const.command_review:
         bot.send_message(message.chat.id, "Все елочки лучшего качества ...")
-        answer = "отзывы шикарны ..."
-#        log(message, answer)
+#        log(message, u"отзывы шикарны ...")
     elif message.text == const.command_buy:
         step = 1
-        answer = "выбор ёлочного склада"
- #       log(message, answer)
-    elif message.text == const.command_buy:
+ #       log(message, u"выбор ёлочного базара")
+    elif message.text in const.command_reg:
         step = 2
-        answer = "выбор ёлочного склада"
-#       log(message, answer)
+#       log(message, u"выбор ёлочки или ели")
     elif message.text == "!" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, "hi, master")
         answer = "виват ..."
@@ -86,15 +82,17 @@ def handle_text(message):
         # remove
         user_parkup.row('/start', '/stop')
         # /remove
-        user_parkup.row(const.command_shop)
+        user_parkup.row(const.command_reg[8], const.command_reg[1], const.command_reg[2])
+        user_parkup.row(const.command_reg[7], const.command_reg[0], const.command_reg[3])
+        user_parkup.row(const.command_reg[5], const.command_reg[6], const.command_reg[4])
         user_parkup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, "Выбирай купить и покупай ...", reply_markup=user_parkup)
+        bot.send_message(message.chat.id, "Продажа осуществляется в Москве.\nВыбирай район базара ...", reply_markup=user_parkup)
     elif step == 2:
         user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
         # remove
         user_parkup.row('/start', '/stop')
         # /remove
-        user_parkup.row(const.command_shop)
+        user_parkup.row(const.command_goods[0], const.command_goods[1])
         user_parkup.row(const.command_review, const.command_rules, const.command_help)
         bot.send_message(message.chat.id, "Выбирай купить и покупай ...", reply_markup=user_parkup)
     else:
