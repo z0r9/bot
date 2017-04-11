@@ -15,6 +15,17 @@ i = 1
 # bot info
 print ("Bot profile is: {0}".format(bot.get_me()))
 
+# eventlog
+def log(message, answer):
+    from datetime import datetime
+    print ("\n---{0}---".format(datetime.now()))
+    print(type(message.text))
+    print("Message from {0} {1} (id = {2})\nText: {3}".format(message.from_user.first_name,
+                                                                message.from_user.last_name,
+                                                                str(message.from_user.id),
+                                                                message.text))
+    print("Answer: {0}".format(answer))
+
 # bot commands
 
 # .start
@@ -44,29 +55,49 @@ def handle_text(message):
 # chat message
 @bot.message_handler(content_types=['text'])
 def handle_text(message):
-    answer = "hey, read help another!"
     global i
-    if message.text == const.command_rules.decode('utf-8'):
+    step = 0
+    if message.text == const.command_rules:
         bot.send_message(message.chat.id, "Выбираем, оплачиваем, получаем ...")
-#       log(message, answer)
-    elif message.text == const.command_review.decode('utf-8'):
+        answer = "правила просты ..."
+#        log(message, answer)
+    elif message.text == const.command_review:
         bot.send_message(message.chat.id, "Все елочки лучшего качества ...")
-    elif message.text == const.command_buy.decode('utf-8'):
-        bot.send_message(message.chat.id,"заказ {0} подготовлен".format(str(i)))
-        bot.send_message(message.chat.id, "[Checkout]({0})".format(const.logo), parse_mode="Markdown")
-        # remove in prod
-        time.sleep(5)
-        # end of remove
-        bot.send_message(message.chat.id, "оплата заказа № {0} завершена".format(str(i)))
-        bot.send_message(message.chat.id, "заказ {0} передан в доставку".format(str(i)))
-        i += 1
-        answer = "оплата произведена"
+        answer = "отзывы шикарны ..."
+#        log(message, answer)
+    elif message.text == const.command_buy:
+        step = 1
+        answer = "выбор ёлочного склада"
+ #       log(message, answer)
+    elif message.text == const.command_buy:
+        step = 2
+        answer = "выбор ёлочного склада"
 #       log(message, answer)
     elif message.text == "!" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, "hi, master")
-#       log(message, answer)
+        answer = "виват ..."
+#        log(message, answer)
     else:
-        bot.send_message(message.chat.id, "hey, read help another!")
-#       log(message, answer)
+        bot.send_message(message.chat.id, "прочитай раздел помощь ...")
+        answer = "прочитай раздел помощь ..."
+#        log(message, answer)
+    if step == 1:
+        user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
+        # remove
+        user_parkup.row('/start', '/stop')
+        # /remove
+        user_parkup.row(const.command_shop)
+        user_parkup.row(const.command_review, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, "Выбирай купить и покупай ...", reply_markup=user_parkup)
+    elif step == 2:
+        user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
+        # remove
+        user_parkup.row('/start', '/stop')
+        # /remove
+        user_parkup.row(const.command_shop)
+        user_parkup.row(const.command_review, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, "Выбирай купить и покупай ...", reply_markup=user_parkup)
+    else:
+        bot.send_message(message.chat.id, "прочитай раздел помощь ...")
 
 bot.polling(none_stop=True, interval=0)
