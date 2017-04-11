@@ -20,11 +20,12 @@ print ("Bot profile is: {0}".format(bot.get_me()))
 def log(question, answer):
     from datetime import datetime
     print ("\n---{0}---".format(datetime.now()))
-    print("Message from {0} {1} (id = {2})\nText: {3}".format(question.from_user.first_name,
+    print(u"Message from {0} {1} (id = {2})\nText: {3}".format(question.from_user.first_name,
                                                                 question.from_user.last_name,
                                                                 str(question.from_user.id),
                                                                 question.text))
-    print("Answer: {0}".format(answer))
+    print(question.text)
+    print(u"Answer: {0}".format(answer))
 
 # bot commands
 
@@ -59,20 +60,19 @@ def handle_text(message):
     step = 0
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, "Выбираем, оплачиваем, получаем ...")
-#        log(message, u"правила просты ...")
+        log(message, u"правила просты ...")
     elif message.text == const.command_review:
         bot.send_message(message.chat.id, "Все елочки лучшего качества ...")
-#        log(message, u"отзывы шикарны ...")
+        log(message, u"отзывы шикарны ...")
     elif message.text == const.command_buy:
         step = 1
- #       log(message, u"выбор ёлочного базара")
+        log(message, u"выбор ёлочного базара")
     elif message.text in const.command_reg:
         step = 2
-#       log(message, u"выбор ёлочки или ели")
+       log(message, u"выбор ёлочки или ели")
     elif message.text == "!" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, "hi, master")
-        answer = "виват ..."
-#        log(message, answer)
+        log(message, u"виват ...")
     else:
         bot.send_message(message.chat.id, "прочитай раздел помощь ...")
         answer = "прочитай раздел помощь ..."
