@@ -20,12 +20,11 @@ print ("Bot profile is: {0}".format(bot.get_me()))
 def log(question, answer):
     from datetime import datetime
     print ("\n---{0}---".format(datetime.now()))
-    print(u"Message from {0} {1} (id = {2})\nText: {3}".format(question.from_user.first_name,
+    print(u"Message from {0} {1} (id = {2})\nCommand: {3}".format(question.from_user.first_name,
                                                                 question.from_user.last_name,
                                                                 str(question.from_user.id),
                                                                 question.text))
-    print(question.text)
-    print(u"Answer: {0}".format(answer))
+    print(u"Comment: {0}".format(answer))
 
 # bot commands
 
@@ -69,7 +68,7 @@ def handle_text(message):
         log(message, u"выбор ёлочного базара")
     elif message.text in const.command_reg:
         step = 2
-       log(message, u"выбор ёлочки или ели")
+        log(message, u"выбор ёлочки или ели")
     elif message.text == "!" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, "hi, master")
         log(message, u"виват ...")
