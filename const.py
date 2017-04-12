@@ -2,6 +2,8 @@
 logo = "http://publicdomainvectors.org/photos/Simarilius_xmas_tree.png"
 command_buy     = u"купить"
 command_goods   = [u"елочка", u"ель"]
+command_add     = u"добавить"
+command_checkout= u"оформить"
 command_review  = u"отзывы"
 command_rules   = u"правила"
 command_help    = u"помощь"

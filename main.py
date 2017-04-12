@@ -11,6 +11,8 @@ import time
 bot = telebot.TeleBot(id.token)
 # order counter
 i = 1
+# order
+order = []
 
 
 # bot info
@@ -64,11 +66,24 @@ def handle_text(message):
         bot.send_message(message.chat.id, "Все елочки лучшего качества ...")
         log(message, u"отзывы шикарны ...")
     elif message.text == const.command_buy:
+        order.append(str(message.from_user.id))
+        order.append(message.text)
         step = 1
         log(message, u"выбор ёлочного базара")
     elif message.text in const.command_reg:
+        order.append(message.text)
         step = 2
         log(message, u"выбор ёлочки или ели")
+    elif message.text in const.command_goods:
+        order.append(message.text)
+        step = 3
+        log(message, u"оформление заказа")
+    elif message.text == const.command_checkout:
+        order.append(message.text)
+        order.append(u"заказ:{0}".format(str(i)))
+        step = 4
+        i += 1
+        log(message, u"оформление заказа")
     elif message.text == "!" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, "hi, master")
         log(message, u"виват ...")
@@ -85,7 +100,8 @@ def handle_text(message):
         user_parkup.row(const.command_reg[7], const.command_reg[0], const.command_reg[3])
         user_parkup.row(const.command_reg[5], const.command_reg[6], const.command_reg[4])
         user_parkup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, "Продажа осуществляется в Москве.\nВыбирай район базара ...", reply_markup=user_parkup)
+        bot.send_message(message.chat.id, "Продажа осуществляется в Москве.\nВыбирай район расположения базара ...",
+                         reply_markup=user_parkup)
     elif step == 2:
         user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
         # remove
@@ -94,6 +110,16 @@ def handle_text(message):
         user_parkup.row(const.command_goods[0], const.command_goods[1])
         user_parkup.row(const.command_review, const.command_rules, const.command_help)
         bot.send_message(message.chat.id, "Выбирай купить и покупай ...", reply_markup=user_parkup)
+    elif step == 3:
+        user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
+        # remove
+        user_parkup.row('/start', '/stop')
+        # /remove
+        user_parkup.row(const.command_add, const.command_checkout)
+        user_parkup.row(const.command_review, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, "Добавляй или оформляй ...", reply_markup=user_parkup)
+    elif step == 4:
+        bot.send_message(message.chat.id,u", ".join(order))
     else:
         bot.send_message(message.chat.id, "прочитай раздел помощь ...")
 
