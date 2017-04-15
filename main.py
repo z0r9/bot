@@ -13,6 +13,8 @@ bot = telebot.TeleBot(id.token)
 i = 1
 # order
 order = []
+# step
+step = 0
 
 
 # bot info
@@ -36,12 +38,10 @@ def handle_text(message):
     bot.send_message(message.chat.id, u"Вас приветствует магазин [Ёлки]({0})".format(const.logo), parse_mode="Markdown")
     bot.send_photo(message.chat.id, "AgADAgADDqgxG-osSEvKHpohZmjRgblMtw0ABGXOtqSQDsEYa_QBAAEC")
     user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-# remove
-#    user_markup.row('/start','/stop')
-# /remove
     user_markup.row(const.command_buy)
     user_markup.row(const.command_review, const.command_rules, const.command_help)
     bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
+    order.append(str(message.from_user.id))
 
 # stop
 @bot.message_handler(commands=['stop'])
@@ -59,15 +59,16 @@ def handle_text(message):
 def handle_text(message):
     global i
     global order
-    step = 0
+    global step
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, u"Выбираем, оплачиваем, получаем ...")
         log(message, u"правила просты ...")
     elif message.text == const.command_review:
-        bot.send_message(message.chat.id, u"Все елочки лучшего качества ...")
-        log(message, u"отзывы шикарны ...")
+        bot.send_message(message.chat.id, u"возвращаемся на шаг назад ...")
+        step -= 1
+        order.pop()
+        log(message, u"возвращаемся назад ...")
     elif message.text == const.command_buy:
-        order.append(str(message.from_user.id))
         order.append(message.text)
         step = 1
         log(message, u"выбор ёлочного базара")
@@ -91,25 +92,30 @@ def handle_text(message):
     else:
         bot.send_message(message.chat.id, u"прочитай раздел помощь ...")
         log(message, u"раздел помощь ...")
-    if step == 1:
-        user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
-        user_parkup.row(const.command_reg[8], const.command_reg[1], const.command_reg[2])
-        user_parkup.row(const.command_reg[7], const.command_reg[0], const.command_reg[3])
-        user_parkup.row(const.command_reg[5], const.command_reg[6], const.command_reg[4])
-        user_parkup.row(const.command_review, const.command_rules, const.command_help)
+    if step == 0:
+        user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
+        user_markup.row(const.command_buy)
+        user_markup.row(const.command_review, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
+    elif step == 1:
+        user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
+        user_markup.row(const.command_reg[8], const.command_reg[1], const.command_reg[2])
+        user_markup.row(const.command_reg[7], const.command_reg[0], const.command_reg[3])
+        user_markup.row(const.command_reg[5], const.command_reg[6], const.command_reg[4])
+        user_markup.row(const.command_review, const.command_rules, const.command_help)
         bot.send_message(message.chat.id, u"Продажа осуществляется в Москве.\nВыбирай район расположения базара ...",
-                         reply_markup=user_parkup)
+                         reply_markup=user_markup)
     elif step == 2:
-        user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
-        user_parkup.row(const.command_goods[0], const.command_goods[1])
-        user_parkup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_parkup)
+        user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
+        user_markup.row(const.command_goods[0], const.command_goods[1])
+        user_markup.row(const.command_review, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
     elif step == 3:
-        user_parkup = telebot.types.ReplyKeyboardMarkup(True, False)
+        user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
 
-        user_parkup.row(const.command_add, const.command_checkout)
-        user_parkup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, u"Добавляй или оформляй ...", reply_markup=user_parkup)
+        user_markup.row(const.command_add, const.command_checkout)
+        user_markup.row(const.command_review, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, u"Добавляй или оформляй ...", reply_markup=user_markup)
     elif step == 4:
         bot.send_message(message.chat.id,u", ".join(order))
         hide_markup = telebot.types.ReplyKeyboardRemove(True);
