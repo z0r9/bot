@@ -47,7 +47,7 @@ def handle_text(message):
     user_markup.row(const.command_buy)
     user_markup.row(const.command_review, const.command_rules, const.command_help)
     bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
-    order.append({'id':message.from_user.id, 'step':0, 'city':'', 'region':'', 'goods':'', 'order':''}) # add user_id to order
+    order.append({'id':message.from_user.id, 'status':'', 'city':'', 'region':'', 'goods':'', 'order':''})
 
 # /stop
 @bot.message_handler(commands=['stop'])
