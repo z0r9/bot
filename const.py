@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 logo = "http://publicdomainvectors.org/photos/Simarilius_xmas_tree.png"
 command_buy     = u"купить"
-command_goods   = [u"елочка", u"ель"]
+command_goods   = [u"елочка 1k₽", u"ель 4k₽"]
 command_add     = u"добавить"
 command_checkout= u"оформить"
 command_review  = u"назад"

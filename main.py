@@ -116,19 +116,32 @@ def handle_text(message):
         bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
     elif step == 3:
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-        user_markup.row(const.command_add, const.command_checkout)
+        user_markup.row(const.command_checkout)
         user_markup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, u"Добавляй или оформляй ...", reply_markup=user_markup)
+        bot.send_message(message.chat.id, u"Оформляй покупку ...", reply_markup=user_markup)
     elif step == 4:
         match = next((l for l in order if l['id'] == message.from_user.id), None)
-        bot.send_message(message.chat.id, u"Заказ № {0} в {1} {2} на {3}".format(match['order'],
-                                                                                 match['city'],
-                                                                                 match['region'],
-                                                                                 match['goods']))
-        log(message, u"Заказ № {0} в {1} {2} на {3}".format(match['order'],
-                                                                                 match['city'],
-                                                                                 match['region'],
-                                                                                 match['goods']))
+        bot.send_message(message.chat.id, u"Заказ № {0} в {1} {2} на {3}".format(
+                        match['order'],
+                        match['city'],
+                        match['region'],
+                        match['goods']))
+        bot.send_message(31796476, u"{0} {1} id({2}) заказ № {3} в {4} {5} на {6}".format(
+                        message.from_user.first_name,
+                        message.from_user.last_name,
+                        str(message.from_user.id),
+                        match['order'],
+                        match['city'],
+                        match['region'],
+                        match['goods']))
+        log(message, u"{0} {1} id({2}) заказ № {3} в {4} {5} на {6}".format(
+                        message.from_user.first_name,
+                        message.from_user.last_name,
+                        str(message.from_user.id),
+                        match['order'],
+                        match['city'],
+                        match['region'],
+                        match['goods']))
         hide_markup = telebot.types.ReplyKeyboardRemove(True);
         bot.send_message(message.chat.id, u"Для повторной покупки набери /start ...", reply_markup=hide_markup)
     else:
