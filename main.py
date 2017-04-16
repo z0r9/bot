@@ -12,7 +12,7 @@ bot = telebot.TeleBot(id.token)
 # order counter
 i = 1
 # order
-order = []
+order = list()
 # step
 step = 0
 
@@ -30,6 +30,12 @@ def log(question, answer):
                                                                 question.text))
     print(u"Comment: {0}".format(answer))
 
+# replace value
+def replace(dic, id, key ,val):
+    for l in dic:
+        if l['id'] == id:
+            l[key] = val
+
 # bot commands
 
 # .start
@@ -41,7 +47,7 @@ def handle_text(message):
     user_markup.row(const.command_buy)
     user_markup.row(const.command_review, const.command_rules, const.command_help)
     bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
-    order.append(str(message.from_user.id))
+    order.append({'id':message.from_user.id, 'step':0, 'city':'', 'region':'', 'goods':'', 'order':''}) # add user_id to order
 
 # stop
 @bot.message_handler(commands=['stop'])
@@ -66,23 +72,21 @@ def handle_text(message):
     elif message.text == const.command_review:
         bot.send_message(message.chat.id, u"возвращаемся на шаг назад ...")
         step -= 1
-        order.pop()
         log(message, u"возвращаемся назад ...")
     elif message.text == const.command_buy:
-        order.append(message.text)
+        replace(order,message.from_user.id,'city','Moscow')
         step = 1
         log(message, u"выбор ёлочного базара")
     elif message.text in const.command_reg:
-        order.append(message.text)
+        replace(order,message.from_user.id,'region',message.text)
         step = 2
         log(message, u"выбор ёлочки или ели")
     elif message.text in const.command_goods:
-        order.append(message.text)
+        replace(order,message.from_user.id,'goods',message.text)
         step = 3
         log(message, u"оформление заказа")
     elif message.text == const.command_checkout:
-        order.append(message.text)
-        order.append(u"заказ:{0}".format(str(i)))
+        replace(order,message.from_user.id,'order',str(i))
         step = 4
         i += 1
         log(message, u"оформление заказа")
@@ -112,16 +116,23 @@ def handle_text(message):
         bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
     elif step == 3:
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-
         user_markup.row(const.command_add, const.command_checkout)
         user_markup.row(const.command_review, const.command_rules, const.command_help)
         bot.send_message(message.chat.id, u"Добавляй или оформляй ...", reply_markup=user_markup)
     elif step == 4:
-        bot.send_message(message.chat.id,u", ".join(order))
+        match = next((l for l in order if l['id'] == message.from_user.id), None)
+        bot.send_message(message.chat.id, u"Заказ № {0} в {1} {2} на {3}".format(match['order'],
+                                                                                 match['city'],
+                                                                                 match['region'],
+                                                                                 match['goods']))
+        log(message, u"Заказ № {0} в {1} {2} на {3}".format(match['order'],
+                                                                                 match['city'],
+                                                                                 match['region'],
+                                                                                 match['goods']))
         hide_markup = telebot.types.ReplyKeyboardRemove(True);
         bot.send_message(message.chat.id, u"Для повторной покупки набери /start ...", reply_markup=hide_markup)
-        order = []
-#    else:
-#        bot.send_message(message.chat.id, u"прочитай раздел помощь ...")
+    else:
+        bot.send_message(message.chat.id, u"какая-то фигня ...")
 
 bot.polling(none_stop=True, interval=0)
+##a = any(d['id'] == 2 for d in dicts) # True or False
