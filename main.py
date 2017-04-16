@@ -38,7 +38,7 @@ def replace(dic, id, key ,val):
 
 # bot commands
 
-# .start
+# /start
 @bot.message_handler(commands=['start'])
 def handle_text(message):
     bot.send_message(message.chat.id, u"Вас приветствует магазин [Ёлки]({0})".format(const.logo), parse_mode="Markdown")
@@ -49,13 +49,13 @@ def handle_text(message):
     bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
     order.append({'id':message.from_user.id, 'step':0, 'city':'', 'region':'', 'goods':'', 'order':''}) # add user_id to order
 
-# stop
+# /stop
 @bot.message_handler(commands=['stop'])
 def handle_text(message):
     hide_markup = telebot.types.ReplyKeyboardRemove(True);
     bot.send_message(message.chat.id, u"Пока ...", reply_markup=hide_markup)
 
-# help
+# /help
 @bot.message_handler(commands=['help'])
 def handle_text(message):
         bot.send_message(message.chat.id,u"Выбери опцию покупка ...")
@@ -74,7 +74,7 @@ def handle_text(message):
         step -= 1
         log(message, u"возвращаемся назад ...")
     elif message.text == const.command_buy:
-        replace(order,message.from_user.id,'city','Moscow')
+        replace(order,message.from_user.id,'city',u'Москва')
         step = 1
         log(message, u"выбор ёлочного базара")
     elif message.text in const.command_reg:
@@ -126,7 +126,7 @@ def handle_text(message):
                         match['city'],
                         match['region'],
                         match['goods']))
-        bot.send_message(31796476, u"{0} {1} id({2}) заказ № {3} в {4} {5} на {6}".format(
+        bot.send_message(id.boss, u"{0} {1} id({2}) заказ № {3} в {4} {5} на {6}".format(
                         message.from_user.first_name,
                         message.from_user.last_name,
                         str(message.from_user.id),
