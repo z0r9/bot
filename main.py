@@ -43,6 +43,7 @@ def replace(dic, id, key ,val):
 def handle_text(message):
     bot.send_message(message.chat.id, u"Вас приветствует магазин [Ёлки]({0})".format(const.logo), parse_mode="Markdown")
     bot.send_photo(message.chat.id, "AgADAgADDqgxG-osSEvKHpohZmjRgblMtw0ABGXOtqSQDsEYa_QBAAEC")
+#    bot.send_photo(message.chat.id, "AAQEABOOUmEZAATpKMKLiH_i9HmCAgABAg")
     user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
     user_markup.row(const.command_buy)
     user_markup.row(const.command_review, const.command_rules, const.command_help)
