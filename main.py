@@ -41,14 +41,20 @@ def replace(dic, id, key ,val):
 # /start
 @bot.message_handler(commands=['start'])
 def handle_text(message):
+    # sending hello message and shop logo
     bot.send_message(message.chat.id, u"Вас приветствует магазин [Ёлки]({0})".format(const.logo), parse_mode="Markdown")
-    bot.send_photo(message.chat.id, "AgADAgADDqgxG-osSEvKHpohZmjRgblMtw0ABGXOtqSQDsEYa_QBAAEC")
-#    bot.send_photo(message.chat.id, "AAQEABOOUmEZAATpKMKLiH_i9HmCAgABAg")
+#    bot.send_photo(message.chat.id, "AgADAgADDqgxG-osSEvKHpohZmjRgblMtw0ABGXOtqSQDsEYa_QBAAEC")
+#    bot.send_document(message.chat.id, "AAQEABOOUmEZAATpKMKLiH_i9HmCAgABAg")
+    # changing keyboard for choosing city
     user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-    user_markup.row(const.command_buy)
+    # filling cities
+    user_markup.row(const.command_city[0], const.command_city[1])
+    # adding main menu command
     user_markup.row(const.command_review, const.command_rules, const.command_help)
-    bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
-    order.append({'id':message.from_user.id, 'status':'', 'city':'', 'region':'', 'goods':'', 'order':''})
+    # sending message, image and keyboard to user
+    bot.send_message(message.chat.id, u"Выбирай город и покупай ...", reply_markup=user_markup)
+    # filling order ... adding user id to order
+    order.append({'id':message.from_user.id, 'status':'', 'city':'', 'region':'', 'goods':'', 'value':'', 'order':''})
 
 # /stop
 @bot.message_handler(commands=['stop'])
@@ -70,20 +76,24 @@ def handle_text(message):
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, u"Выбираем, оплачиваем, получаем ...")
         log(message, u"правила просты ...")
-    elif message.text == const.command_review:
+    elif message.text == const.command_back:
         bot.send_message(message.chat.id, u"возвращаемся на шаг назад ...")
         step -= 1
         log(message, u"возвращаемся назад ...")
-    elif message.text == const.command_buy:
-        replace(order,message.from_user.id,'city',u'Москва')
+    elif message.text == const.command_review:
+        bot.send_message(message.chat.id, u"Отзывы о нас тут ...")
+        log(message, u"возвращаемся назад ...")
+    elif message.text in const.command_city:
+        # check city that user choosen and place city in the order
+        replace(order,message.from_user.id,'city', message.text)
         step = 1
-        log(message, u"выбор ёлочного базара")
-    elif message.text in const.command_reg:
-        replace(order,message.from_user.id,'region',message.text)
+        log(message, u"выбран город: ".format(message.text))
+    elif message.text in const.command_goods:
+        replace(order,message.from_user.id,'goods', message.text)
         step = 2
         log(message, u"выбор ёлочки или ели")
-    elif message.text in const.command_goods:
-        replace(order,message.from_user.id,'goods',message.text)
+    elif message.text in const.command_g_value or message.text in const.command_t_value:
+        replace(order,message.from_user.id,'value', message.text)
         step = 3
         log(message, u"оформление заказа")
     elif message.text == const.command_checkout:
@@ -98,27 +108,30 @@ def handle_text(message):
         bot.send_message(message.chat.id, u"прочитай раздел помощь ...")
         log(message, u"раздел помощь ...")
     if step == 0:
+        # changing keyboard for choosing city
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-        user_markup.row(const.command_buy)
+        # filling cities
+        user_markup.row(const.command_city[0], const.command_city[1])
+        # adding main menu command
         user_markup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
+        # sending message, image and keyboard to user
+        bot.send_message(message.chat.id, u"Выбирай город и покупай ...", reply_markup=user_markup)
     elif step == 1:
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-        user_markup.row(const.command_reg[8], const.command_reg[1], const.command_reg[2])
-        user_markup.row(const.command_reg[7], const.command_reg[0], const.command_reg[3])
-        user_markup.row(const.command_reg[5], const.command_reg[6], const.command_reg[4])
-        user_markup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, u"Продажа осуществляется в Москве.\nВыбирай район расположения базара ...",
-                         reply_markup=user_markup)
+        user_markup.row(const.command_goods[0], const.command_goods[1])
+        user_markup.row(const.command_back, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, u"-- выводим текущий заказ --\nбла-бла\n-- --")
+        bot.send_message(message.chat.id,u"Выбири наименование ...", reply_markup=user_markup)
     elif step == 2:
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
-        user_markup.row(const.command_goods[0], const.command_goods[1])
-        user_markup.row(const.command_review, const.command_rules, const.command_help)
-        bot.send_message(message.chat.id, u"Выбирай купить и покупай ...", reply_markup=user_markup)
+        user_markup.row(const.command_g_value[0], const.command_g_value[1])
+        user_markup.row(const.command_g_value[2], const.command_g_value[3])
+        user_markup.row(const.command_back, const.command_rules, const.command_help)
+        bot.send_message(message.chat.id, u"Выбири характеристики ...", reply_markup=user_markup)
     elif step == 3:
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
         user_markup.row(const.command_checkout)
-        user_markup.row(const.command_review, const.command_rules, const.command_help)
+        user_markup.row(const.command_back, const.command_rules, const.command_help)
         bot.send_message(message.chat.id, u"Оформляй покупку ...", reply_markup=user_markup)
     elif step == 4:
         match = next((l for l in order if l['id'] == message.from_user.id), None)
