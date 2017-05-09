@@ -296,7 +296,7 @@ def handle_text(message):
     elif step == 12:
         bot.send_message(done, u"по вашему заказу поступила оплата")
         bot.send_message(done, u"адрес получения: {0} ".format(message.text))
-
+        step =0
     #
     else:
         bot.send_message(message.chat.id, u"какая-то фигня ...")
