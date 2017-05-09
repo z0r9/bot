@@ -78,7 +78,7 @@ def handle_text(message):
 def handle_text(message):
     global i
     global order
-    global step
+    global step, done
     # rules
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, u"выбираем, оплачиваем, получаем ...")
@@ -150,6 +150,7 @@ def handle_text(message):
     else:
         if ((str(message.from_user.id) == id.operator1) or
             (str(message.from_user.id) == id.operator2)) and step == 10:
+            bot.send_message(message.chat.id, u"введи адрес")
             step = 11
         elif ((str(message.from_user.id) == id.operator1) or
             (str(message.from_user.id) == id.operator2)) and step == 11:
@@ -283,12 +284,18 @@ def handle_text(message):
         # print dictionary
         print order
 
+    elif step == 10:
+        print u"шаг ", step
+
     #
     elif step == 11:
+        print u"шаг ", step
         done = find(order, 'order', message.text, 'id')
+        print done
 
     elif step == 12:
-        bot.send_message(done, u"{0} ".format(message.text))
+        bot.send_message(done, u"по вашему заказу поступила оплата")
+        bot.send_message(done, u"адрес получения: {0} ".format(message.text))
 
     #
     else:
