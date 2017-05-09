@@ -281,8 +281,6 @@ def handle_text(message):
         bot.send_message(message.chat.id, u"для повторной покупки /start ...", reply_markup=hide_markup)
         # clear step for next order
         step = 0
-        # print dictionary
-        print order
 
     elif step == 10:
         print u"шаг ", step
