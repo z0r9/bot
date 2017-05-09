@@ -59,7 +59,7 @@ def handle_text(message):
     # sending message, image and keyboard to user
     bot.send_message(message.chat.id, u"Выбирай город и покупай ...", reply_markup=user_markup)
     # filling order ... adding user id to order
-    order.append({'id':message.from_user.id, 'status':'', 'city':'', 'region':'', 'goods':'', 'value':'', 'order':''})
+    order.append({'id':message.from_user.id, 'status':'', 'city':'', 'goods':'', 'value':'', 'sum':'', 'order':''})
 
 # /stop
 @bot.message_handler(commands=['stop'])
@@ -78,13 +78,16 @@ def handle_text(message):
     global i
     global order
     global step
+    # rules
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, u"выбираем, оплачиваем, получаем ...")
         log(message, u"правила просты ...")
+    # back
     elif message.text == const.command_back:
         bot.send_message(message.chat.id, u"возвращаемся на шаг назад ...")
         step -= 1
         log(message, u"возвращаемся назад ...")
+    # begin
     elif message.text == const.command_menu:
         bot.send_message(message.chat.id, u"возвращаемся в начало ...")
         step = 0
@@ -103,6 +106,24 @@ def handle_text(message):
         log(message, u"выборан товар: {0}".format(message.text))
     elif message.text in const.command_g_value or message.text in const.command_t_value:
         replace(order,message.from_user.id,'value', message.text)
+        # filling sum
+        if message.text == const.command_g_value[0]:
+            replace(order, message.from_user.id, 'sum', 1500)
+        elif message.text == const.command_g_value[1]:
+            replace(order, message.from_user.id, 'sum', 3000)
+        elif message.text == const.command_g_value[2]:
+            replace(order, message.from_user.id, 'sum', 4500)
+        elif message.text == const.command_g_value[3]:
+            replace(order, message.from_user.id, 'sum', 6000)
+        elif message.text == const.command_t_value[0]:
+            replace(order, message.from_user.id, 'sum', 4000)
+        elif message.text == const.command_t_value[1]:
+            replace(order, message.from_user.id, 'sum', 6000)
+        elif message.text == const.command_t_value[2]:
+            replace(order, message.from_user.id, 'sum', 8000)
+        elif message.text == const.command_t_value[3]:
+            replace(order, message.from_user.id, 'sum', 10000)
+        #
         step = 3
         log(message, u"выбран размер: {0}".format(message.text))
     elif message.text == const.command_checkout:
@@ -158,7 +179,7 @@ def handle_text(message):
                                           u"город: {0}\n"
                                           u"товар: {1}\n"
                                           u"-- ... --".format(find(order,message.from_user.id,'city'),
-                                                          find(order, message.from_user.id, 'goods')))
+                                                              find(order, message.from_user.id, 'goods')))
         # sending message and request user action
         bot.send_message(message.chat.id, u"выбери размер ...", reply_markup=user_markup)
 
@@ -176,7 +197,7 @@ def handle_text(message):
                                           u"город: {0}\n"
                                           u"товар: {1}\n"
                                           u"-- ... --".format(find(order,message.from_user.id,'city'),
-                                                          find(order, message.from_user.id, 'goods')))
+                                                              find(order, message.from_user.id, 'goods')))
         # sending message and request user action
         bot.send_message(message.chat.id, u"выбери размер ...", reply_markup=user_markup)
 
@@ -192,39 +213,48 @@ def handle_text(message):
         bot.send_message(message.chat.id, u"-- заказ --\n"
                                           u"город: {0}\n"
                                           u"товар: {1}\n"
-                                          u"размер: {2}"
+                                          u"размер: {2}\n"
+                                          u"к оплате: {3} руб.\n"
                                           u"-- ... --".format(find(order,message.from_user.id,'city'),
                                                               find(order, message.from_user.id, 'goods'),
-                                                              find(order, message.from_user.id, 'value')))
+                                                              find(order, message.from_user.id, 'value'),
+                                                              str(find(order, message.from_user.id, 'sum'))))
         # sending message and request user action
         bot.send_message(message.chat.id, u"оформление заказа ...", reply_markup=user_markup)
 
     # sending order to operator
     elif step == 4:
         match = next((l for l in order if l['id'] == message.from_user.id), None)
-        bot.send_message(message.chat.id, u"заказ № {0} в {1} {2} на {3}".format(
+        bot.send_message(message.chat.id, u"заказ № {0} в {1} на {2} {3} стоимостью {4}".format(
                         match['order'],
                         match['city'],
                         match['goods'],
-                        match['value']))
-        bot.send_message(id.boss, u"{0} {1} id({2}) заказ № {3} в {4} на {5} в {6}".format(
+                        match['value'],
+                        match['sum']))
+        bot.send_message(message.chat.id, u"оплату необходимо произвести на кошелек\n"
+                                          u"qiwi 7890654321 или\n"
+                                          u"yandex 1234567890\n"
+                                          u"указав в комментарии № заказа")
+        bot.send_message(id.boss, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7}".format(
                         message.from_user.first_name,
                         message.from_user.last_name,
                         str(message.from_user.id),
                         match['order'],
                         match['city'],
                         match['goods'],
-                        match['value']))
-        log(message, u"{0} {1} id({2}) заказ № {3} в {4} {5} на {6}".format(
+                        match['value'],
+                        match['sum']))
+        log(message, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7}".format(
                         message.from_user.first_name,
                         message.from_user.last_name,
                         str(message.from_user.id),
                         match['order'],
                         match['city'],
-                        match['region'],
-                        match['goods']))
+                        match['goods'],
+                        match['value'],
+                        match['sum']))
         hide_markup = telebot.types.ReplyKeyboardRemove(True);
-        bot.send_message(message.chat.id, u"Для повторной покупки набери /start ...", reply_markup=hide_markup)
+        bot.send_message(message.chat.id, u"для повторной покупки /start ...", reply_markup=hide_markup)
     else:
         bot.send_message(message.chat.id, u"какая-то фигня ...")
 
