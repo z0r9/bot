@@ -206,9 +206,9 @@ def handle_text(message):
         # prepare keyboard for change
         user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
         # filling checkout key
-        user_markup.row(const.command_checkout)
+        user_markup.row(const.command_menu, const.command_checkout)
         # adding main menu commands
-        user_markup.row(const.command_menu, const.command_rules, const.command_help)
+        user_markup.row(const.command_back, const.command_rules, const.command_help)
         # show current cart options
         bot.send_message(message.chat.id, u"-- заказ --\n"
                                           u"город: {0}\n"
@@ -225,7 +225,7 @@ def handle_text(message):
     # sending order to operator
     elif step == 4:
         match = next((l for l in order if l['id'] == message.from_user.id), None)
-        bot.send_message(message.chat.id, u"заказ № {0} в {1} на {2} {3} стоимостью {4}".format(
+        bot.send_message(message.chat.id, u"заказ № {0} в {1} на {2} {3} к оплате {4} руб.".format(
                         match['order'],
                         match['city'],
                         match['goods'],
@@ -235,7 +235,10 @@ def handle_text(message):
                                           u"qiwi 7890654321 или\n"
                                           u"yandex 1234567890\n"
                                           u"указав в комментарии № заказа")
-        bot.send_message(id.boss, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7}".format(
+        if find(order,message.from_user.id,'city') == const.command_city[0]:
+            id_oper = id.operator1
+        else: id_oper = id.operator2
+        bot.send_message(id_oper, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7} руб.".format(
                         message.from_user.first_name,
                         message.from_user.last_name,
                         str(message.from_user.id),
@@ -244,7 +247,7 @@ def handle_text(message):
                         match['goods'],
                         match['value'],
                         match['sum']))
-        log(message, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7}".format(
+        log(message, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7} руб.".format(
                         message.from_user.first_name,
                         message.from_user.last_name,
                         str(message.from_user.id),
