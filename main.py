@@ -17,6 +17,7 @@ order = list()
 step = 0
 done = 0
 
+#print bot.get_webhook_info(timeout=None)
 
 # bot info
 print ("Bot profile is: {0}".format(bot.get_me()))
