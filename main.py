@@ -291,6 +291,7 @@ def handle_text(message):
             id_oper = id.operator1
         else:
             id_oper = id.operator2
+
         bot.send_message(id_oper, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7} руб.".format(
             message.from_user.first_name,
             message.from_user.last_name,
@@ -314,15 +315,16 @@ def handle_text(message):
         # clear step for next order
         step = 0
 
+    # operator`s mode
     elif step == 10:
-        print u"шаг {0}".format(str(step))
+        logging.debug(u"шаг {0}".format(str(step)))
 
-    #
+    # operator set order that was payed
     elif step == 11:
         done = find(order, 'order', message.text, 'id')
         # log
         logging.debug(u"шаг {0}, id = {1}".format(str(step), done))
-
+    #
     elif step == 12:
         bot.send_message(done, u"по вашему заказу поступила оплата")
         bot.send_message(done, u"адрес получения: {0} ".format(message.text))
