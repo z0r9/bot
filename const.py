@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 logo = "http://publicdomainvectors.org/photos/Simarilius_xmas_tree.png"
+store           = 'store.pickle'
 command_city    = [u"Москва",u"неМосква"]
 command_goods   = [u"елочка", u"ель"]
 command_g_value = [u"1.0 метр", u"1.5 метра", u"1.7 метра", u"2.0 метра"]
