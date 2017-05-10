@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-logo            = "http://publicdomainvectors.org/photos/Simarilius_xmas_tree.png"
 gif             = "http://i.giphy.com/13IC4LVeP5NGNi.gif"
 store           = 'store.pickle'
 command_city    = [u"Москва",u"неМосква"]
@@ -14,3 +13,6 @@ command_review  = u"отзывы"
 command_rules   = u"правила"
 command_help    = u"помощь"
 command_reg     = [u"ЦАО", u"САО", u"СВАО", u"ВАО", u"ЮВАО", u"ЮЗАО", u"ЮАО", u"ЗАО", u"СЗАО"]
+y_wallets       = ['410011110701234', '410011110701235', '410011110701236', '410011110701237']
+q_wallets       = ['79001234567', '79001234568', '79001234568', '79001234568', '79001234568']
+blacklist       = []

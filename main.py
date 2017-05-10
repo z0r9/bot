@@ -3,7 +3,7 @@
 
 import telebot
 import id, const
-import logging, pickle, os.path
+import logging, pickle, os.path, random
 # remove
 import time
 # /remove
@@ -71,6 +71,8 @@ def find(dic, index, id, key):
 # /start
 @bot.message_handler(commands=['start'])
 def handle_text(message):
+    # check blacklist
+    # TODO check is userid in blacklist
     # sending hello message and shop logo
     bot.send_message(message.chat.id, u"Вас приветствует магазин Ёлки")
     # log message
@@ -187,6 +189,7 @@ def handle_text(message):
         with open(const.store, 'wb') as f:
             pickle.dump([i, order], f)
         message2log(u"оформление заказа", message)
+        logging.debug(order)
     elif message.text == "@" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, u"hi, master")
         # statistics
@@ -309,9 +312,10 @@ def handle_text(message):
             match['value'],
             match['sum']))
         bot.send_message(message.chat.id, u"оплату необходимо произвести на кошелек\n"
-                                          u"qiwi 7890654321 или\n"
-                                          u"yandex 1234567890\n"
-                                          u"указав в комментарии № заказа")
+                                          u"qiwi {0} или\n"
+                                          u"yandex {1}\n"
+                                          u"указав в комментарии № заказа".format(random.choice(const.q_wallets),
+                                                                                  random.choice(const.y_wallets)))
         if find(order, 'id', message.from_user.id, 'city') == const.command_city[0]:
             id_oper = id.operator1
         else:
