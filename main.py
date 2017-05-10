@@ -284,13 +284,12 @@ def handle_text(message):
         step = 0
 
     elif step == 10:
-        print u"шаг ", step
+        print u"шаг {0}".format(str(step))
 
     #
     elif step == 11:
-        print u"шаг ", step
+        print u"шаг {0}".format(str(step))
         done = find(order, 'order', message.text, 'id')
-        print done
 
     elif step == 12:
         bot.send_message(done, u"по вашему заказу поступила оплата")
