@@ -41,15 +41,16 @@ logging.info(u"Bot profile is: {0}".format(bot.get_me()))
 # logging.warning('And this, too')
 
 # eventlog
-def log(question, answer):
+def message2log(comment, msg):
     from datetime import datetime
-    print ("\n---{0}---".format(datetime.now()))
-    print(u"Message from {0} {1} (id = {2})\nCommand: {3}".format(question.from_user.first_name,
-                                                                  question.from_user.last_name,
-                                                                  str(question.from_user.id),
-                                                                  question.text))
-    print(u"Comment: {0}".format(answer))
-
+    # log comment
+    logging.info(u"{0} {1}".format(datetime.now(), comment))
+    # log message
+    logging.info(u"{0} message from {1} {2} (id = {3}) command: {4}".format(datetime.now(),
+                                                                             msg.from_user.first_name,
+                                                                             msg.from_user.last_name,
+                                                                             msg.from_user.id,
+                                                                             msg.text))
 
 # replace value
 def replace(dic, id, key, val):
@@ -71,10 +72,15 @@ def find(dic, index, id, key):
 @bot.message_handler(commands=['start'])
 def handle_text(message):
     # sending hello message and shop logo
-    bot.send_message(message.chat.id, u"Вас приветствует магазин [Ёлки]({0})".format(const.logo), parse_mode="Markdown")
-    # log
-    #    bot.send_photo(message.chat.id, "AgADAgADDqgxG-osSEvKHpohZmjRgblMtw0ABGXOtqSQDsEYa_QBAAEC")
-    #    bot.send_document(message.chat.id, "AAQEABOOUmEZAATpKMKLiH_i9HmCAgABAg")
+    bot.send_message(message.chat.id, u"Вас приветствует магазин Ёлки")
+    # log message
+    message2log(u"", message)
+    # display gif
+    bot.send_document(message.chat.id, const.gif)
+    # log display
+    message2log(u"", message)
+    # show agenda
+    bot.send_message(message.chat.id, u"читаем отзывы, правила и прочее")
     # changing keyboard for choosing city
     user_markup = telebot.types.ReplyKeyboardMarkup(True, False)
     # filling cities
@@ -82,7 +88,7 @@ def handle_text(message):
     # adding main menu command
     user_markup.row(const.command_review, const.command_rules, const.command_help)
     # sending message, image and keyboard to user
-    bot.send_message(message.chat.id, u"Выбирай город и покупай ...", reply_markup=user_markup)
+    bot.send_message(message.chat.id, u"выбери город, товар и покупай ...", reply_markup=user_markup)
     # filling order ... adding user id to order
     order.append(
         {'id': message.from_user.id, 'status': '', 'city': '', 'goods': '', 'value': '', 'sum': '', 'order': ''})
@@ -110,31 +116,48 @@ def handle_text(message):
     # rules
     if message.text == const.command_rules:
         bot.send_message(message.chat.id, u"выбираем, оплачиваем, получаем ...")
-        log(message, u"правила просты ...")
+        message2log(u"правила", message)
     # back
     elif message.text == const.command_back:
+        # going back one step
         bot.send_message(message.chat.id, u"возвращаемся на шаг назад ...")
+        # backward one step
         step -= 1
-        log(message, u"возвращаемся назад ...")
+        # log message
+        message2log(u"возврат назад", message)
     # begin
     elif message.text == const.command_menu:
+        # return to begining
         bot.send_message(message.chat.id, u"возвращаемся в начало ...")
+        # goto first step
         step = 0
-        log(message, u"возвращаемся назад ...")
+        # log message
+        message2log(u"возврат в меню", message)
+    # review
     elif message.text == const.command_review:
-        bot.send_message(message.chat.id, u"Отзывы о нас тут ...")
-        log(message, u"возвращаемся назад ...")
+        # display reviews
+        bot.send_message(message.chat.id, u"отзывы тут")
+        # log message
+        message2log(u"отзывы", message)
+    # city selection check
     elif message.text in const.command_city:
-        # check city that user chosen and place city in the order
+        # insert city in the order
         replace(order, message.from_user.id, 'city', message.text)
+        # goto product selection step
         step = 1
-        log(message, u"выбран город: {0}".format(message.text))
+        # log message
+        message2log(u"выбор города", message)
+    # goods selection check
     elif message.text in const.command_goods:
+        # insert goods in the order
         replace(order, message.from_user.id, 'goods', message.text)
+        # goto value selection step
         step = 2
-        log(message, u"выборан товар: {0}".format(message.text))
+        # log message
+        message2log(u"выборан товар", message)
     elif message.text in const.command_g_value or message.text in const.command_t_value:
         replace(order, message.from_user.id, 'value', message.text)
+        # TODO replace with good alorithm
         # filling sum
         if message.text == const.command_g_value[0]:
             replace(order, message.from_user.id, 'sum', 1500)
@@ -152,9 +175,10 @@ def handle_text(message):
             replace(order, message.from_user.id, 'sum', 8000)
         elif message.text == const.command_t_value[3]:
             replace(order, message.from_user.id, 'sum', 10000)
-        # goto next step
+        # goto chechout step
         step = 3
-        log(message, u"выбран размер: {0}".format(message.text))
+        # log message
+        message2log(u"выбран размер", message)
     elif message.text == const.command_checkout:
         replace(order, message.from_user.id, 'order', str(i))
         step = 4
@@ -162,22 +186,21 @@ def handle_text(message):
         # saving orders and index
         with open(const.store, 'wb') as f:
             pickle.dump([i, order], f)
-        log(message, u"оформление заказа")
+        message2log(u"оформление заказа", message)
     elif message.text == "@" and str(message.from_user.id) == id.boss:
         bot.send_message(message.chat.id, u"hi, master")
         # statistics
-        log(message, u"виват ...")
+        message2log(u"¿cómo está el jefe?", message)
     elif message.text == "!" and ((str(message.from_user.id) == id.operator1) or
                                       (str(message.from_user.id) == id.operator2)):
-        # operator must enter order number
+        # goto selection order number step
         step = 10
         # prepare keyboard to enter order number
         hide_markup = telebot.types.ReplyKeyboardRemove(True);
         # sending message to operator
         bot.send_message(message.chat.id, u"введи номер заказа", reply_markup=hide_markup)
-        # statistics
-        # logging
-        log(message, u"виват ...")
+        # log message
+        message2log(u"выбор заказа оператором", message)
     else:
         if ((str(message.from_user.id) == id.operator1) or
                 (str(message.from_user.id) == id.operator2)) and step == 10:
@@ -187,8 +210,10 @@ def handle_text(message):
                   (str(message.from_user.id) == id.operator2)) and step == 11:
             step = 12
         else:
+            # invalid input
             bot.send_message(message.chat.id, u"прочитай раздел помощь ...")
-            log(message, u"раздел помощь ...")
+            # log user message
+            message2log(u"некорректный ввод, вывод раздела с помощью", message)
     #
     #
     # choosing city
@@ -301,15 +326,12 @@ def handle_text(message):
             match['goods'],
             match['value'],
             match['sum']))
-        log(message, u"{0} {1} id({2}) заказ № {3} в {4} на {5} {6} стоимостью {7} руб.".format(
-            message.from_user.first_name,
-            message.from_user.last_name,
-            str(message.from_user.id),
+        message2log(u"заказ № {0} в {1} на {2} {3} стоимостью {4} руб.".format(
             match['order'],
             match['city'],
             match['goods'],
             match['value'],
-            match['sum']))
+            match['sum']), message)
         hide_markup = telebot.types.ReplyKeyboardRemove(True);
         bot.send_message(message.chat.id, u"для повторной покупки /start ...", reply_markup=hide_markup)
         # clear step for next order
@@ -321,7 +343,10 @@ def handle_text(message):
 
     # operator set order that was payed
     elif step == 11:
+        # search order id for completing
         done = find(order, 'order', message.text, 'id')
+        # set order status complete
+        replace(order, done, 'status', "done")
         # log
         logging.debug(u"шаг {0}, id = {1}".format(str(step), done))
     #

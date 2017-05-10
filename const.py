@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-logo = "http://publicdomainvectors.org/photos/Simarilius_xmas_tree.png"
+logo            = "http://publicdomainvectors.org/photos/Simarilius_xmas_tree.png"
+gif             = "http://i.giphy.com/13IC4LVeP5NGNi.gif"
 store           = 'store.pickle'
 command_city    = [u"Москва",u"неМосква"]
 command_goods   = [u"елочка", u"ель"]
